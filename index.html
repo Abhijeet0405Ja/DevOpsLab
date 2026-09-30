@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact Form</title>
+<style>
+  :root {
+    --bg: #f3f5f7;
+    --card: #ffffff;
+    --text: #1d2733;
+    --muted: #5c6b7a;
+    --border: #cfd8e0;
+    --accent: #1f6f8b;
+    --accent-dark: #17566d;
+    --error: #b3261e;
+    --success: #1b7a45;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12181e;
+      --card: #1b232b;
+      --text: #e8edf1;
+      --muted: #9aa8b5;
+      --border: #34424f;
+      --accent: #4bb3d3;
+      --accent-dark: #7cc9e0;
+      --error: #ff8a80;
+      --success: #6fd39b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    line-height: 1.5;
+  }
+  .card {
+    width: 100%;
+    max-width: 520px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 28px;
+  }
+  h1 { margin: 0 0 4px; font-size: 1.6rem; }
+  .sub { margin: 0 0 24px; color: var(--muted); }
+  .field { margin-bottom: 18px; }
+  label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.95rem; }
+  input, select, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font: inherit;
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  textarea { resize: vertical; min-height: 110px; }
+  input:focus, select:focus, textarea:focus {
+    outline: 3px solid var(--accent);
+    outline-offset: 1px;
+    border-color: var(--accent);
+  }
+  .invalid { border-color: var(--error); }
+  .error { display: none; margin-top: 4px; font-size: 0.85rem; color: var(--error); }
+  .field.has-error .error { display: block; }
+  .row { display: flex; gap: 12px; }
+  .row .field { flex: 1; }
+  .checks { display: flex; gap: 16px; flex-wrap: wrap; }
+  .checks label { display: flex; align-items: center; gap: 6px; font-weight: 400; margin: 0; }
+  .checks input { width: auto; }
+  button {
+    width: 100%;
+    padding: 12px;
+    font: inherit;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  @media (prefers-color-scheme: dark) { button { color: #0c1318; } }
+  button:hover { background: var(--accent-dark); }
+  button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .success {
+    display: none;
+    margin-top: 16px;
+    padding: 12px;
+    border: 1px solid var(--success);
+    border-radius: 8px;
+    color: var(--success);
+  }
+  @media (max-width: 480px) { .row { flex-direction: column; gap: 0; } }
+</style>
+</head>
+<body>
+  <main class="card">
+    <h1>Get in touch</h1>
+    <p class="sub">Fill in the details and we'll reply within two working days.</p>
+
+    <form id="contactForm" novalidate>
+      <div class="row">
+        <div class="field">
+          <label for="name">Full name</label>
+          <input type="text" id="name" name="name" autocomplete="name" required>
+          <div class="error">Enter your name.</div>
+        </div>
+        <div class="field">
+          <label for="phone">Phone (optional)</label>
+          <input type="tel" id="phone" name="phone" autocomplete="tel" pattern="[0-9+\s-]{7,15}">
+          <div class="error">Enter a valid phone number.</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" autocomplete="email" required>
+        <div class="error">Enter a valid email address.</div>
+      </div>
+
+      <div class="field">
+        <label for="topic">Topic</label>
+        <select id="topic" name="topic" required>
+          <option value="">Choose a topic</option>
+          <option>General question</option>
+          <option>Support</option>
+          <option>Feedback</option>
+          <option>Other</option>
+        </select>
+        <div class="error">Choose a topic.</div>
+      </div>
+
+      <div class="field">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" required minlength="10"></textarea>
+        <div class="error">Write at least 10 characters.</div>
+      </div>
+
+      <div class="field">
+        <label>Preferred contact method</label>
+        <div class="checks">
+          <label><input type="radio" name="method" value="email" checked> Email</label>
+          <label><input type="radio" name="method" value="phone"> Phone</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="checks">
+          <label><input type="checkbox" id="agree" required> I agree to be contacted about this request</label>
+        </div>
+        <div class="error">Check this box to continue.</div>
+      </div>
+
+      <button type="submit">Send message</button>
+      <div class="success" id="success" role="status">Message sent. Thank you!</div>
+    </form>
+  </main>
+
+<script>
+  const form = document.getElementById('contactForm');
+  const success = document.getElementById('success');
+
+  function check(input) {
+    const field = input.closest('.field');
+    const ok = input.type === 'checkbox' ? input.checked : input.checkValidity();
+    field.classList.toggle('has-error', !ok);
+    input.classList.toggle('invalid', !ok);
+    return ok;
+  }
+
+  form.querySelectorAll('input, select, textarea').forEach(el => {
+    if (el.type === 'radio') return;
+    el.addEventListener('blur', () => check(el));
+    el.addEventListener('input', () => {
+      if (el.closest('.field').classList.contains('has-error')) check(el);
+    });
+  });
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    success.style.display = 'none';
+    let valid = true;
+    form.querySelectorAll('input:not([type=radio]), select, textarea').forEach(el => {
+      if (!check(el)) valid = false;
+    });
+    if (!valid) return;
+
+    const data = Object.fromEntries(new FormData(form).entries());
+    console.log('Form data:', data); // Replace with fetch() to your server
+    success.style.display = 'block';
+    form.reset();
+  });
+</script>
+</body>
+</html>
